@@ -2,7 +2,7 @@
 ## Software Environment & System Dependencies
 * **R Version:** 4.5.1 
 * **Required CRAN Packages:** * `survival` (>= 3.5-5)
-* ## 4. Causal Analysis (`causal_analysis.R`)
+* ## Causal Analysis (`causal_analysis.R`)
 
 ### Description
 This script implements a G-computation (Causal Standardization) analysis pipeline using the baseline demographics of the Stanford Heart Transplant dataset (`jasa`). It evaluates the Average Treatment Effect (ATE) of receiving a heart transplant on patient survival probability across standardized, discrete time horizons ($t = 100, 500,$ and $1000$ days).
