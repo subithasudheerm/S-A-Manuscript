@@ -75,3 +75,22 @@ This script conducts a comprehensive real-data application and comparative goodn
 * **`actuar` (v3.3-3 or higher):** Extends baseline sampling by providing the Log-Logistic (`llogis`) operational primitives.
 * **`goftest` (v1.2-3 or higher):** Provides the mathematical engines for advanced empirical distance testing via Cramer-von Mises (`cvm.test`) and Anderson-Darling (`ad.test`).
 * **`stats` (Base R):** Handles core optimizations, the Kolmogorov-Smirnov infrastructure (`ks.test`), and distribution computations (`pweibull`, `pgamma`, `plnorm`).
+* ## 6. Empirical Application on Carbon Fiber Strengths (`Dataset2- Table 8&9.R`)
+
+### Description
+This script handles the second empirical application in the manuscript, fitting the bounded $\theta$-WMWPf distribution and competing models to a reliability dataset representing the single-filament strengths of carbon fibers ($n = 63$). It compares the bounded distribution's fitting capabilities against classical models (Weibull, Gamma, Lognormal, Log-Logistic) and the generalized five-parameter Weibull-Lomax distribution.
+
+### Key Features & Workflow:
+1. **Data Initialization:** Loads the empirical carbon fiber tensile strength vector ($n = 63$).
+2. **Probability Distribution Framework with Stability Guards:** Implements the custom cumulative distribution functions (CDF) and log-likelihood calculation engines. The functions feature numerical bounding constraints (`pmin` and `pmax` down to `1e-15`) to handle precision floors and ensure stability when working with small fractions close to zero or the parameter boundary $\beta$.
+3. **Parametric Model Fitting:** Executes automated parametric fitting. Standard continuous distributions are calculated via the `fitdistrplus` package. Non-linear, complex multi-parameter spaces ($\theta$-WMWPf and Weibull-Lomax) are solved using the bounded `L-BFGS-B` optimization routine (`optim`) with updated safe initial guesses tailored specifically for this dataset.
+4. **Comprehensive Goodness-of-Fit Comparison (`calc_stats`):** Automatically computes seven essential model-selection selection criteria based on the optimized, maximized log-likelihood value:
+   * **Information Criteria:** Akaike Information Criterion ($\text{AIC}$), Bayesian Information Criterion ($\text{BIC}$), Consistent Akaike Information Criterion ($\text{CAIC}$), and Hannan-Quinn Information Criterion ($\text{HQIC}$).
+   * **Distance and Hypothesis Tests:** Cramer-von Mises ($W^*$), Anderson-Darling ($A^*$), and Kolmogorov-Smirnov ($\text{KS}$) distance metrics along with the resulting asymptotic $p$-values.
+5. **Table Generation (Tables 8 & 9):** Combines the parameters and metrics into a summary matrix. It outputs the numerical results required to construct **Table 8 (MLE Parameters for Dataset 2)** and **Table 9 (Goodness of Fit Metrics for Dataset 2)** in the final manuscript.
+
+### Required R Packages
+* **`fitdistrplus` (v1.1-11 or higher):** Used to perform automatic maximum likelihood estimations on standard continuous distributions (`fitdist`).
+* **`actuar` (v3.3-3 or higher):** Extends baseline distribution families to include the Log-Logistic (`llogis`) baseline distribution.
+* **`goftest` (v1.2-3 or higher):** Computes empirical distance tests via Cramer-von Mises (`cvm.test`) and Anderson-Darling (`ad.test`) functions.
+* **`stats` (Base R):** Coordinates bounded multivariate optimization routines, basic data summary measures, and hypothesis checking (`ks.test`).
