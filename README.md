@@ -33,5 +33,45 @@ This script implements a parametric proportional hazards regression framework us
 
 ### Required R Packages
 * **`survival` (v3.5-5 or higher):** Core package used for downloading the historical `jasa` dataset.
-* **`stats` (Base R):** Provides the mathematical optimization interface via `optim(method = "L-BFGS-B")` and standard chi-squared distribution computing via `pchisq()`.
+
+* **`stats` (Base R):** Provides the mathematical optimization interface via `optim(method = "L-BFGS-B")` and standard chi-squared
+* distribution computing via `pchisq()`.
 * **`base` (Base R):** Utilized for structural linear algebra calculations (`%*%`, `diag`, `solve`) and element mappings (`sapply`).
+* ## Sampling and Monte Carlo Simulation (`sampling_and_simulation.R`)
+
+### Description
+This script implements an automated Monte Carlo simulation framework to evaluate the finite-sample performance of Maximum Likelihood Estimators (MLE) for the $\theta$-WMWPf distribution. It establishes a random variate generator, evaluates parameter estimation across a series of replications, and outputs core performance benchmarks (Average MLE, Standard Error, and Mean Squared Error).
+
+### Key Features & Workflow:
+1. **Inverse Transform Sampling Framework (`r_wmwpf`):** Generates independent random realizations from the $\theta$-WMWPf distribution using the Probability Integral Transform. Since the cumulative distribution function (CDF) cannot be inverted analytically, it implements an independent random uniform draw $U_i \sim \text{Uniform}(0,1)$ and executes numerical root-finding using `uniroot` bounded across the exact support interval $[0, \beta]$.
+2. **Hardened Estimation Objective Matrix (`neg_log_lik`):** Evaluates the negative joint log-likelihood function. It includes strict numerical boundary guards and protected logarithm thresholds (`pmax`) to insulate the execution loop against boundary $\text{NaN}$ traps and division-by-zero errors when sample values draw close to the parameter ceiling $\beta$.
+3. **Execution Loop & Optimization Setup:** Simulates data generations over a specified number of independent replications (e.g., $1,000$ iterations) given a target baseline parameter vector $\Theta_0 = (\theta = 0.60, \lambda = 0.15, k = 2.00, \alpha = 1.20, \beta = 5.00)$. Parameter optimization is calculated via the bounded L-BFGS-B algorithm (`optim`).
+4. **Computational Efficiency Protocol:** To optimize computational efficiency, the Monte Carlo simulations are executed sequentially for each sample size ($n = 20, 50, 100,$ and $500$) rather than simultaneously. This serial configuration prevents memory saturation and mitigates excessive computational overhead on standard hardware structures.
+5. **Statistical Metrics & Output Compiler:** Filters out un-converged optimization runs using strict complete-case filtering. It processes the empirical sampling matrix to compile statistical metrics:
+   * **Average MLE:** $\frac{1}{B}\sum_{b=1}^{B} \hat{\psi}_b$
+   * **Standard Error (SE):** The empirical standard deviation of parameter estimations across valid iterations.
+   * **Mean Squared Error (MSE):** $\frac{1}{B}\sum_{b=1}^{B} (\hat{\psi}_b - \psi_{\text{true}})^2$
+   It automatically formats and outputs a publication-ready data frame containing these metrics.
+
+### Required R Packages
+* **`stats` (Base R):** Handles inverse uniform generation (`runif`), physical root evaluations (`uniroot`), bounded optimization processing (`optim(method = "L-BFGS-B")`), and structural statistical metrics (`sd`).
+* **`base` (Base R):** Utilized for structural array loops, array dimension cleaning (`complete.cases`), matrix operations (`colMeans`, `sweep`), and formatted console outputs.
+* ##  Empirical Real Data Application (`Dataset1- Table 6&7.R`)
+
+### Description
+This script conducts a comprehensive real-data application and comparative goodness-of-fit analysis on an empirical dataset. It evaluates the fitting flexibility of the proposed bounded $\theta$-WMWPf distribution against five competing models: the standard baseline classical models (Weibull, Gamma, Lognormal, Log-Logistic) and a advanced five-parameter generalization (Weibull-Lomax distribution).
+
+### Key Features & Workflow:
+1. **Data Initialization:** Loads and analyzes a continuous survival/reliability dataset ($n = 50$). 
+2. **Probability Distribution Modeling:** Code definitions are written directly for the cumulative distribution functions (CDF) and log-likelihood engines of both the bounded $\theta$-WMWPf distribution and the complex Weibull-Lomax ($\text{WLx}$) model.
+3. **Bounded Multi-Model Estimation:** Leverages the `fitdistrplus` architecture to fit baseline distributions via classical maximum likelihood estimation. For the highly non-linear, parameter-constrained $\theta$-WMWPf and Weibull-Lomax configurations, custom optimizations are computed using the `L-BFGS-B` algorithm (`optim`), integrating rigid boundary thresholds to restrict the mixing parameter space strictly within $0 < \theta < 1$.
+4. **Goodness-of-Fit Metric Compilations (`calc_stats`):** A unified automated helper routine that parses the resulting maximized log-likelihood configurations to calculate seven critical academic selection benchmarks:
+   * **Information Criteria:** Akaike Information Criterion ($\text{AIC}$), Bayesian Information Criterion ($\text{BIC}$), Consistent Akaike Information Criterion ($\text{CAIC}$), and Hannan-Quinn Information Criterion ($\text{HQIC}$).
+   * **Empirical Distance Tests:** Cramer-von Mises statistic ($W^*$), Anderson-Darling statistic ($A^*$), and the Kolmogorov-Smirnov ($\text{KS}$) distance alongside its corresponding $p$-value.
+5. **Table Generation (Tables 6 & 7):** Merges the statistical metrics into an empirical evaluation matrix. It automatically formats and outputs the exact values required to compile both **Table 6 (MLE Parameters)** and **Table 7 (Goodness of Fit Metrics)** in the final manuscript.
+
+### Required R Packages
+* **`fitdistrplus` (v1.1-11 or higher):** Utilized for numerical parameter estimations of standard continuous baseline alternatives (`fitdist`).
+* **`actuar` (v3.3-3 or higher):** Extends baseline sampling by providing the Log-Logistic (`llogis`) operational primitives.
+* **`goftest` (v1.2-3 or higher):** Provides the mathematical engines for advanced empirical distance testing via Cramer-von Mises (`cvm.test`) and Anderson-Darling (`ad.test`).
+* **`stats` (Base R):** Handles core optimizations, the Kolmogorov-Smirnov infrastructure (`ks.test`), and distribution computations (`pweibull`, `pgamma`, `plnorm`).
