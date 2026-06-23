@@ -29,7 +29,7 @@ This script implements a parametric proportional hazards regression framework us
 2. **Parametric Formulation:** Code definitions are written directly for the structural baseline survival function ($S_0(t)$) and its derivative baseline hazard mechanism ($h_0(t)$) dictated by the parameters bounded inside the valid space $(0 < \theta < 1, \lambda > 0, k > 0, \alpha > 0, \beta > \max(t))$.
 3. **Log-Likelihood Maximization:** Establishes a joint log-likelihood interface mapping the linear prediction engine ($z^T\gamma$) against cumulative hazard matrices ($H_0(t) = -\log S_0(t)$). Numerical optimization is handled using the bounded L-BFGS-B algorithm (`optim`), integrating safe boundary handlers (`tryCatch`) to insulate calculation steps against invalid parameters.
 4. **Statistical Inference & Wald Tests:** Infers asymptotic standard errors using a regularized observed Hessian inversion matrix (`solve`). It computes standard Wald chi-square scores ($\text{Wald} = (\hat{\gamma}/\text{SE})^2$) and yields significant $p$-values, hazard ratios ($\text{Exp}(\beta)$), and symmetric 95% exponential confidence bounds.
-5. **Table Generation (Table 5):** Automatically formats and prints an academic-standard summary text block matching the precise structural presentation of Table 5 in the manuscript.
+5. **Table Generation (Table 10):** Automatically formats and prints an academic-standard summary text block matching the precise structural presentation of Table 10 in the manuscript.
 
 ### Required R Packages
 * **`survival` (v3.5-5 or higher):** Core package used for downloading the historical `jasa` dataset.
